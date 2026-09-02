@@ -1,10 +1,10 @@
 # احبس الحرارة — Al-Tamaize playable ad
 
 Hold-to-spray HTML5 mini-game for **Al-Tamaize** (مؤسسة التميز الفني التجارية), Khobar.
-One mechanic: hold the roof to spray polyurethane foam, seal cracks, drop the AC bill.
+One mechanic: trace the roof cracks with polyurethane spray foam.
 Portrait 9:16. Arabic UI, Saudi Gulf tone.
 
-**Play now (jsDelivr):** [open the game](https://cdn.jsdelivr.net/gh/khaledSoq/ahbes-alharara@main/index.html)
+**Live:** [khaledsoq.github.io/ahbes-alharara](https://khaledsoq.github.io/ahbes-alharara/)
 
 Repo: [github.com/khaledSoq/ahbes-alharara](https://github.com/khaledSoq/ahbes-alharara)
 
@@ -13,79 +13,44 @@ WhatsApp CTA: [wa.me/966542178038](https://wa.me/966542178038?text=%D8%A7%D9%84%
 ## How to run locally
 
 ```bash
-# from the repo root
 python3 -m http.server 8080
-# then open http://127.0.0.1:8080
+# http://127.0.0.1:8080
 ```
 
-Opening `index.html` as a file also works (no backend). Use a local server if a browser blocks `file://` canvas or fonts.
+## Swap the official logo PNG
 
-Phone: same Wi-Fi, visit `http://YOUR-LAN-IP:8080`.
+`index.html` already points at:
 
-## File structure
+- `assets/logo-al-tamaize.png` — full lockup (symbol + **Al-Tamaize** + COATING & PAINTING)
+- `assets/logo-symbol.png` — symbol only, no wordmark, no tagline
 
-```
-index.html
-styles.css
-game.js
-assets/logo-al-tamaize.svg   # lockup (swap for official PNG)
-assets/logo-symbol.svg       # HUD / play mark
-assets/favicon.svg           # symbol on white
-README.md
-```
+If the PNG is missing, the img is **hidden** (no alt-text dump). An inline SVG fallback in the white pill shows instead.
 
-Vanilla JS. No build step. No network requests during play except the WhatsApp CTA tap.
+Drop the official attached lockup in as `assets/logo-al-tamaize.png` (do not redraw). Crop the swoosh+T to `assets/logo-symbol.png` on a white square. Never stretch.
 
-## Swap the official logo
-
-The attached Al-Tamaize lockup must be used as pixels, not redrawn.
-
-1. Save the official file as `assets/logo-al-tamaize.png` (full lockup: symbol + **Al-Tamaize** + `COATING & PAINTING`).
-2. Crop the symbol-only mark to `assets/logo-symbol.png` (no tagline).
-3. In `index.html` the `<img>` tags already prefer PNG and fall back to SVG:
-   - `src="assets/logo-al-tamaize.png"`
-   - `src="assets/logo-symbol.png"`
-4. Favicon / touch icon: symbol only, white background, do not stretch.
-
-Never write Altamaize, Al Tamaize, or AL-TAMAIZE in UI. Brand name is **Al-Tamaize**. Arabic near the logo: التميز.
-
-## Replace placeholder roof art with Khobar job photos
-
-Gameplay currently paints a Khobar-style villa / flat roof in canvas so the package stays tiny and works offline.
-
-To swap in real job photos later:
-
-1. Drop photos into `assets/`:
-   - `villa-start.jpg` — 1080×1920, cream Eastern Province villa, noon sun, water tank on the roof.
-   - `roof-play.jpg` — overhead 3/4 of a cracked, wet concrete roof.
-   - `roof-win.jpg` — same camera, white foam / elastomeric coating, cooler light.
-2. In `styles.css` add `.bg-start`, `.bg-play`, `.bg-win` layers with `background-image`.
-3. In `game.js`, skip `drawVilla()` / `drawRoofScene()` fills when those images are loaded (`new Image(); img.src = ...`). Keep canvas for foam, cracks, nozzle, and heat.
-4. Keep HUD text readable: white chips + text shadow. Do not put navy/red logo on a busy roof without a white pill.
-
-## Playable-ad export notes
-
-- Zip root must contain `index.html` (not nested in a folder).
-- Portrait 9:16. Designed 1080×1920, scales to any phone.
-- Keep the package under 5 MB.
-- No external fetches during play. For Snapchat/TikTok/Meta export:
-  - Download the two Cairo woff2 files from `styles.css` `@font-face` into `assets/fonts/` and point `src` at local files.
-  - WhatsApp deep link is the only allowed navigation.
-- Safe area: titles, timer, CTA sit above the bottom 140px (in-app browser chrome).
-- Hold = `pointerdown` / `touchstart`. Release = `pointerup` / `touchend` / `pointercancel`.
-- Timer pauses when the tab is hidden.
-- Optional 10ms vibrate on first successful hold.
+Brand name in UI is **Al-Tamaize** only. Arabic near the logo: التميز.
 
 ## Game loop
 
 | Screen | Notes |
 | --- | --- |
-| Start | Logo pill, احبس الحرارة / وقف التسريب, ابدأ |
-| Play | 8.0s. Hold anywhere to spray cream foam. Fill 0→100% while held. 6 cracks seal on contact. Bill climbs untreated 480→580 ر.س |
-| Win | Fill 100% **or** all cracks sealed. Bill drops toward 310. ضمان 10 سنوات. Cool tint. |
-| Lose | Timer hits 0 under 100%. Roof stays hot. Same guarantee + same two buttons. Never dead-ends. |
+| Start | Street view of the cream Khobar villa + palm + roof tank. احبس الحرارة / وقف التسريب |
+| Play | Camera on **that same villa's roof**. 8.0s. Hold to spray cream PU foam. **Win only if all 6 cracks are sealed.** Fill bar is feedback (sealed-crack average), not a win. Holding one spot does not win. |
+| Win | Same roof, coated cream/white, cooler light. Bill animates down toward 310. ضمان 10 سنوات. |
+| Lose | Same roof, still hot and cracked. Same guarantee + same two buttons. |
+
+Hint during play: **امسك على الشقوق**
 
 Primary CTA: **اطلب فحص مجاني** → WhatsApp prefilled message.
-Replay: **العب مرة ثانية** resets timer, bill, cracks, foam, heat, HUD.
+Replay: **العب مرة ثانية**.
 
 Allowed claims only: يقلل انتقال الحرارة، يحمي من التسريب، ضمان مكتوب 10 سنوات.
+
+## Playable-ad export
+
+- `index.html` at zip root. Portrait 9:16. Under 5 MB.
+- No fetches during play except WhatsApp on CTA tap.
+- Bundle Cairo woff2 from `styles.css` `@font-face` for Snap/TikTok/Meta.
+- Titles, timer, CTA sit above the bottom 140px.
+- Hold = pointerdown/touchstart. Release = pointerup/touchend/pointercancel.
+- Timer pauses when the tab is hidden.
