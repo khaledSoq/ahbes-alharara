@@ -1,0 +1,40 @@
+name: process-logo
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Pillow and check tools
+        run: |
+          python3 -c "import sys; print(sys.version)"
+          pip install pillow
+          python3 -c "from PIL import Image; print('PIL', Image.__version__)"
+          which convert magick identify ffmpeg node pngquant optipng python3 file || true
+      - name: Process official logo
+        run: python3 scripts/process_logo.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: logo-outputs
+          path: out/
+      - name: Commit PNGs into assets and logo-exports
+        run: |
+          mkdir -p assets logo-exports
+          cp -f out/logo-al-tamaize.png assets/logo-al-tamaize.png
+          cp -f out/logo-symbol.png assets/logo-symbol.png
+          cp -f out/* logo-exports/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/logo-al-tamaize.png assets/logo-symbol.png logo-exports scripts/process_logo.py
+          if git diff --cached --quiet; then
+            echo "no changes"
+          else
+            git commit -m "Add official Al-Tamaize PNG lockup and cropped symbol (site pixels, no redraw)"
+            git push
+          fi
