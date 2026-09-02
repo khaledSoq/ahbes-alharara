@@ -1,0 +1,33 @@
+Al-Tamaize official logo processing
+Source: altamaize.com WP media id=9 title=لوجو التميز
+source webp url: https://altamaize.com/wp-content/uploads/2026/07/%D8%AA%D8%B5%D9%85%D9%8A%D9%85-%D8%A8%D8%AF%D9%88%D9%86-%D8%B9%D9%86%D9%88%D8%A7%D9%86.webp
+source webp bytes: 10702
+NOTE: /home/workdir/attachments/241054.jpg was NOT present in the agent sandbox.
+Used official website lockup pixels (no redraw).
+
+python3: 3.12.14 (/opt/hostedtoolcache/Python/3.12.14/x64/bin/python3)
+PIL/Pillow: yes 12.3.0
+ImageMagick convert: no
+ImageMagick magick: no
+identify: no
+ffmpeg: no
+node: /usr/local/bin/node
+pngquant: no
+optipng: no
+file: yes file-5.45
+
+
+outputs:
+  logo-al-tamaize-embed.svg: 89292 bytes
+  logo-al-tamaize.b64.txt: 89052 bytes
+  logo-al-tamaize.png: 66789 bytes, 461x283 RGB PNG
+  logo-jpeg.b64.txt: 47084 bytes
+  logo-symbol-embed.svg: 78888 bytes
+  logo-symbol.b64.txt: 78648 bytes
+  logo-symbol.png: 58984 bytes, 469x469 RGB PNG
+  source-black.png: 95852 bytes, 866x288 RGBA PNG
+  source-official.jpg: 35311 bytes, 866x288 RGB JPEG
+  source-official.webp: 10702 bytes, 866x288 RGB WEBP
+logo-al-tamaize.b64.txt len=89052 first80=iVBORw0KGgoAAAANSUhEUgAAAc0AAAEbCAIAAAA3QEh4AAEAAElEQVR42uz9e5Rc13kfiP6+vc+jzulG last40=W9et69b1sb7+f9+4ZUIke3bQAAAAAElFTkSuQmCC
+logo-symbol.b64.txt len=78648 first80=iVBORw0KGgoAAAANSUhEUgAAAdUAAAHVCAIAAAAo2/agAADmL0lEQVR42uz9d5xm13HfCVfVOTc9ufPk last40=GwgEAq8W/v8eZPcx2TCKlwAAAABJRU5ErkJggg==
+logo-jpeg.b64.txt len=47084 first80=/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkK last40=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//2Q==
