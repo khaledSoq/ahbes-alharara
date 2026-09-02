@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#123A6B" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="description" content="احبس الحرارة — وقف التسريب. لعبة عزل حراري من Al-Tamaize." />
+  <title>احبس الحرارة | Al-Tamaize</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="frame">
+    <div id="stage" data-state="start">
+      <canvas id="fx"></canvas>
+      <div id="heat" aria-hidden="true"></div>
+      <div id="cool" aria-hidden="true"></div>
+      <div id="grain" aria-hidden="true"></div>
+
+      <section id="screen-start" class="screen">
+        <div class="logo-pill" aria-label="Al-Tamaize">
+          <img class="logo-img" src="assets/logo-al-tamaize.svg" alt="Al-Tamaize — COATING & PAINTING" />
+          <p class="ar-name">التميز</p>
+        </div>
+        <h1 class="title">احبس الحرارة</h1>
+        <p class="subtitle">وقف التسريب</p>
+        <button id="btn-start" class="btn btn-navy" type="button">ابدأ</button>
+        <p class="hint">امسك الشاشة عشان تعزل</p>
+      </section>
+
+      <section id="screen-play" class="screen" hidden>
+        <div class="hud-top">
+          <div class="chip chip-bill" id="bill-chip">
+            <span class="chip-label">فاتورة التكييف</span>
+            <span class="chip-value"><span id="bill-num">480</span> ر.س</span>
+          </div>
+          <img class="hud-mark" src="assets/logo-symbol.svg" alt="" />
+          <div class="timer" id="timer">8.0</div>
+        </div>
+        <div class="chip chip-fill" id="fill-chip">
+          <div class="fill-row">
+            <span>نسبة العزل</span>
+            <span id="fill-num">0%</span>
+          </div>
+          <div class="bar"><i id="fill-bar"></i></div>
+        </div>
+        <div class="hint-pill" id="hold-hint">امسك تعزل</div>
+      </section>
+
+      <section id="screen-end" class="screen" hidden>
+        <div class="end-card" id="end-card">
+          <div class="logo-pill logo-pill-end">
+            <img class="logo-img" src="assets/logo-al-tamaize.svg" alt="Al-Tamaize — COATING & PAINTING" />
+          </div>
+          <div class="badge" id="badge">
+            <span class="badge-k">ضمان</span>
+            <span class="badge-n">10</span>
+            <span class="badge-k">سنوات</span>
+          </div>
+          <p class="end-bill" id="end-bill" hidden>
+            فاتورة التكييف:
+            <s id="bill-from">580</s>
+            <span class="bill-to"><span id="bill-to">310</span> ر.س</span>
+          </p>
+          <p class="end-copy" id="end-copy"></p>
+          <p class="end-sub" id="end-sub"></p>
+          <a id="btn-wa" class="btn btn-wa" target="_blank" rel="noopener">اطلب فحص مجاني</a>
+          <button id="btn-replay" class="btn btn-ghost" type="button">العب مرة ثانية</button>
+        </div>
+      </section>
+    </div>
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>
