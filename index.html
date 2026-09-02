@@ -7,40 +7,49 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="mobile-web-app-capable" content="yes" />
+  <meta http-equiv="Cache-Control" content="no-cache" />
   <meta name="description" content="احبس الحرارة — وقف التسريب. لعبة عزل حراري من Al-Tamaize." />
   <title>احبس الحرارة | Al-Tamaize</title>
-  <base href="./" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="assets/favicon.svg" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=20260903b" />
+  <script>
+    (function () {
+      var p = location.pathname;
+      if (!/\/$|\.html$/i.test(p)) {
+        location.replace(p + "/" + location.search + location.hash);
+      }
+    })();
+  </script>
 </head>
 <body>
-  <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <!-- playtest-patch-3 2026-09-03 -->
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
     <symbol id="logo-lockup" viewBox="0 0 640 340">
       <defs>
         <linearGradient id="sw" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stop-color="#123A6B"/>
-          <stop offset="42%" stop-color="#123A6B"/>
+          <stop offset="38%" stop-color="#123A6B"/>
           <stop offset="100%" stop-color="#E31B23"/>
         </linearGradient>
       </defs>
-      <path d="M58 148 C 155 62, 330 48, 528 108" fill="none" stroke="#123A6B" stroke-width="36" stroke-linecap="round"/>
-      <path d="M148 198 C 268 250, 448 222, 558 122" fill="none" stroke="url(#sw)" stroke-width="18" stroke-linecap="round"/>
-      <g transform="translate(168,76)">
-        <rect x="2" y="22" width="15" height="50" rx="3" fill="#123A6B" transform="rotate(-32 10 47)"/>
-        <rect x="18" y="12" width="14" height="46" rx="3" fill="#E31B23" transform="rotate(-32 25 35)"/>
-        <rect x="32" y="4" width="14" height="42" rx="3" fill="#123A6B" transform="rotate(-32 39 25)"/>
-        <path d="M58 6 L176 6 L160 30 L120 30 L78 132 L40 132 L88 30 L58 30 Z" fill="#E31B23"/>
+      <path d="M52 150 C 150 58, 340 42, 540 108" fill="none" stroke="#123A6B" stroke-width="34" stroke-linecap="round"/>
+      <path d="M140 200 C 270 252, 455 220, 568 118" fill="none" stroke="url(#sw)" stroke-width="18" stroke-linecap="round"/>
+      <g transform="translate(170,74)">
+        <rect x="2" y="22" width="14" height="50" rx="3" fill="#123A6B" transform="rotate(-32 9 47)"/>
+        <rect x="18" y="12" width="13" height="46" rx="3" fill="#E31B23" transform="rotate(-32 24 35)"/>
+        <rect x="32" y="4" width="13" height="42" rx="3" fill="#123A6B" transform="rotate(-32 38 25)"/>
+        <path d="M56 6 L176 6 L160 30 L118 30 L76 132 L38 132 L86 30 L56 30 Z" fill="#E31B23"/>
       </g>
       <text x="320" y="286" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="52" font-weight="800" letter-spacing="-1.2">
         <tspan fill="#123A6B">Al-</tspan><tspan fill="#E31B23">T</tspan><tspan fill="#123A6B">amaize</tspan>
       </text>
-      <text x="320" y="322" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#123A6B" letter-spacing="6.5">COATING & PAINTING</text>
+      <text x="320" y="322" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#123A6B" letter-spacing="6.5">COATING &amp; PAINTING</text>
     </symbol>
     <symbol id="logo-mark" viewBox="0 0 220 130">
-      <path d="M16 74 C 58 24, 130 16, 200 50" fill="none" stroke="#123A6B" stroke-width="18" stroke-linecap="round"/>
-      <path d="M48 96 C 102 120, 158 108, 202 56" fill="none" stroke="#E31B23" stroke-width="10" stroke-linecap="round"/>
-      <path d="M86 36 L148 36 L136 54 L112 54 L88 112 L64 112 L92 54 L86 54 Z" fill="#E31B23"/>
+      <path d="M14 74 C 56 22, 128 14, 204 50" fill="none" stroke="#123A6B" stroke-width="18" stroke-linecap="round"/>
+      <path d="M46 98 C 104 122, 160 108, 204 56" fill="none" stroke="#E31B23" stroke-width="10" stroke-linecap="round"/>
+      <path d="M84 34 L148 34 L136 52 L112 52 L86 112 L62 112 L90 52 L84 52 Z" fill="#E31B23"/>
     </symbol>
   </svg>
 
@@ -52,8 +61,10 @@
 
       <section id="screen-start" class="screen">
         <div class="logo-pill" aria-label="Al-Tamaize">
-          <img class="logo-img" src="assets/logo-al-tamaize.png" alt="" />
-          <svg class="logo-fallback" hidden><use href="#logo-lockup"></use></svg>
+          <img class="logo-img" src="assets/logo-al-tamaize.png?v=20260903b" alt="" />
+          <svg class="logo-fallback" viewBox="0 0 640 340" role="img" aria-hidden="true">
+            <use href="#logo-lockup" xlink:href="#logo-lockup" width="640" height="340"></use>
+          </svg>
           <p class="ar-name">التميز</p>
         </div>
         <h1 class="title">احبس الحرارة</h1>
@@ -69,8 +80,10 @@
             <span class="chip-value"><span id="bill-num">480</span> ر.س</span>
           </div>
           <div class="hud-mark" aria-hidden="true">
-            <img class="logo-img hud-img" src="assets/logo-symbol.png" alt="" />
-            <svg class="logo-fallback hud-svg" hidden><use href="#logo-mark"></use></svg>
+            <img class="logo-img hud-img" src="assets/logo-symbol.png?v=20260903b" alt="" />
+            <svg class="logo-fallback hud-svg" viewBox="0 0 220 130" aria-hidden="true">
+              <use href="#logo-mark" xlink:href="#logo-mark" width="220" height="130"></use>
+            </svg>
           </div>
           <div class="timer" id="timer">8.0</div>
         </div>
@@ -87,8 +100,10 @@
       <section id="screen-end" class="screen" hidden>
         <div class="end-card" id="end-card">
           <div class="logo-pill logo-pill-end">
-            <img class="logo-img" src="assets/logo-al-tamaize.png" alt="" />
-            <svg class="logo-fallback" hidden><use href="#logo-lockup"></use></svg>
+            <img class="logo-img" src="assets/logo-al-tamaize.png?v=20260903b" alt="" />
+            <svg class="logo-fallback" viewBox="0 0 640 340" role="img" aria-hidden="true">
+              <use href="#logo-lockup" xlink:href="#logo-lockup" width="640" height="340"></use>
+            </svg>
           </div>
           <div class="badge" id="badge">
             <span class="badge-k">ضمان</span>
@@ -108,6 +123,6 @@
       </section>
     </div>
   </div>
-  <script src="game.js"></script>
+  <script src="game.js?v=20260903b"></script>
 </body>
 </html>
