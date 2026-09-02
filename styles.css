@@ -54,7 +54,7 @@ html, body {
   max-width: 480px;
   max-height: 853px;
   overflow: hidden;
-  background: #d7c3a1;
+  background: #ead9b8;
   box-shadow: 0 20px 60px rgba(0,0,0,.45);
 }
 
@@ -66,7 +66,7 @@ html, body {
 #fx { z-index: 1; }
 #heat {
   z-index: 2;
-  background: linear-gradient(180deg, rgba(255,176,80,.12), rgba(210,90,30,.32) 70%, rgba(90,20,10,.22));
+  background: linear-gradient(180deg, rgba(255,176,80,.10), rgba(210,90,30,.28) 70%, rgba(90,20,10,.18));
   mix-blend-mode: overlay;
   opacity: .55;
   transition: opacity .6s ease;
@@ -82,8 +82,8 @@ html, body {
 #stage[data-state="win"] #heat { opacity: 0; }
 #stage[data-state="win"] #cool { opacity: 1; }
 #stage[data-state="lose"] #heat { opacity: .75; }
-#stage[data-state="play"] #heat { opacity: .45; }
-#stage[data-state="start"] #heat { opacity: .32; }
+#stage[data-state="play"] #heat { opacity: .38; }
+#stage[data-state="start"] #heat { opacity: .28; }
 
 .screen {
   position: absolute; inset: 0;
@@ -95,31 +95,39 @@ html, body {
 .screen[hidden] { display: none !important; }
 
 .logo-pill {
-  width: 70%;
+  width: 72%;
   max-width: 280px;
   background: #fff;
   border-radius: 22px;
-  padding: 12px 16px 8px;
+  padding: 14px 18px 10px;
   box-shadow: 0 10px 28px rgba(18,58,107,.18);
   text-align: center;
 }
-.logo-img { width: 100%; height: auto; display: block; }
+.logo-img {
+  width: 100%;
+  height: auto;
+  display: none;
+  object-fit: contain;
+}
+.logo-img.is-loaded { display: block; }
 .logo-img.is-broken { display: none !important; }
 .logo-fallback {
   width: 100%;
   height: auto;
   display: block;
   aspect-ratio: 640 / 340;
+  overflow: visible;
 }
-.logo-fallback[hidden] { display: none !important; }
+.logo-fallback.is-replaced { display: none !important; }
+.hud-svg { aspect-ratio: 220 / 130; }
 .ar-name {
-  margin: 2px 0 0;
+  margin: 4px 0 0;
   font-weight: 700;
   font-size: 13px;
   letter-spacing: .35em;
   color: var(--navy);
 }
-.logo-pill-end { width: 62%; padding: 10px 12px 8px; margin-bottom: 10px; }
+.logo-pill-end { width: 64%; padding: 10px 14px 8px; margin-bottom: 10px; }
 
 .title {
   margin: 18px 0 0;
@@ -221,16 +229,19 @@ html, body {
 }
 .chip-value #bill-num { color: var(--red); }
 .hud-mark {
-  width: 44px; height: 44px;
+  width: 48px; height: 48px;
   background: #fff;
   border-radius: 12px;
-  padding: 4px;
+  padding: 5px;
   box-shadow: 0 6px 16px rgba(0,0,0,.16);
   justify-self: center;
   overflow: hidden;
+  display: grid;
+  place-items: center;
 }
 .hud-img, .hud-svg { width: 100%; height: 100%; object-fit: contain; display: block; }
-.hud-svg { aspect-ratio: auto; }
+.hud-img { display: none; }
+.hud-img.is-loaded { display: block; }
 .timer {
   justify-self: end;
   min-width: 72px;
