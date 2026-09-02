@@ -10,6 +10,9 @@ Repo: [github.com/khaledSoq/ahbes-alharara](https://github.com/khaledSoq/ahbes-a
 
 WhatsApp CTA: [wa.me/966542178038](https://wa.me/966542178038?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%A8%D8%BA%D9%89%20%D9%81%D8%AD%D8%B5%20%D9%85%D8%AC%D8%A7%D9%86%D9%8A%20%D9%84%D9%84%D8%B9%D8%B2%D9%84%20%D8%A7%D9%84%D8%AD%D8%B1%D8%A7%D8%B1%D9%8A/%D8%A7%D9%84%D9%85%D8%A7%D8%A6%D9%8A%20%D9%85%D9%86%20%D8%A5%D8%B9%D9%84%D8%A7%D9%86%20%D8%A7%D8%AD%D8%A8%D8%B3%20%D8%A7%D9%84%D8%AD%D8%B1%D8%A7%D8%B1%D8%A9%20%E2%80%94%20Al-Tamaize)
 
+Hard-refresh on phone (the previous build cached a 404 PNG).
+Open with a trailing slash: `https://khaledsoq.github.io/ahbes-alharara/`
+
 ## How to run locally
 
 ```bash
@@ -17,16 +20,14 @@ python3 -m http.server 8080
 # http://127.0.0.1:8080
 ```
 
-## Swap the official logo PNG
+## Logo
 
-`index.html` already points at:
+Official lockup pixels (not redrawn):
 
-- `assets/logo-al-tamaize.png` — full lockup (symbol + **Al-Tamaize** + COATING & PAINTING)
-- `assets/logo-symbol.png` — symbol only, no wordmark, no tagline
+- `assets/logo-al-tamaize.png` — full lockup on white
+- `assets/logo-symbol.png` — swoosh + T only (HUD)
 
-If the PNG is missing, the img is **hidden** (no alt-text dump). An inline SVG fallback in the white pill shows instead.
-
-Drop the official attached lockup in as `assets/logo-al-tamaize.png` (do not redraw). Crop the swoosh+T to `assets/logo-symbol.png` on a white square. Never stretch.
+`index.html` loads the PNG first. Empty `alt`. If the PNG is missing, the `<img>` is hidden (no alt-text dump, no broken-icon) and an inline SVG fallback with `viewBox` stays in the white pill.
 
 Brand name in UI is **Al-Tamaize** only. Arabic near the logo: التميز.
 
@@ -34,8 +35,8 @@ Brand name in UI is **Al-Tamaize** only. Arabic near the logo: التميز.
 
 | Screen | Notes |
 | --- | --- |
-| Start | Street view of the cream Khobar villa + palm + roof tank. احبس الحرارة / وقف التسريب |
-| Play | Camera on **that same villa's roof**. 8.0s. Hold to spray cream PU foam. **Win only if all 6 cracks are sealed.** Fill bar is feedback (sealed-crack average), not a win. Holding one spot does not win. |
+| Start | Street view of the cream Khobar villa + palm + roof tank + ACs. احبس الحرارة / وقف التسريب |
+| Play | Camera on **that same villa's roof** (cream parapet, cylindrical tank, ACs, facade windows below). 8.0s. Hold to spray cream PU foam as circular blotches. **Win only if all 6 cracks are sealed.** Fill bar is feedback (sealed-crack average), not a win. Holding one spot does not win. |
 | Win | Same roof, coated cream/white, cooler light. Bill animates down toward 310. ضمان 10 سنوات. |
 | Lose | Same roof, still hot and cracked. Same guarantee + same two buttons. |
 
