@@ -12,7 +12,7 @@
   const DECK2 = "#DDD0B6";
   const WINCOL = "#1E2A38";
   const DURATION = 15;
-  const FLY_DUR = 2.55;
+  const FLY_DUR = 2.6;
   const BILL_START = 480;
   const BILL_MAX = 580;
   const BILL_WIN = 310;
@@ -95,6 +95,16 @@
     { pts: [[0.56, 0.54], [0.66, 0.58], [0.78, 0.64]], w: 5, seal: 0 },
     { pts: [[0.40, 0.56], [0.48, 0.62], [0.52, 0.68]], w: 7, seal: 0 }
   ];
+
+  function clamp(v, a, b) {
+    return Math.max(a, Math.min(b, v));
+  }
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+  function smooth(t) {
+    return t * t * (3 - 2 * t);
+  }
 
   function resize() {
     const r = stage.getBoundingClientRect();
@@ -186,7 +196,7 @@
     foamCtx.arc(x, y, r, 0, Math.PI * 2);
     foamCtx.fill();
     if (strong) {
-      foamCtx.fillStyle = "rgba(255,255,250,0.40)";
+      foamCtx.fillStyle = "rgba(255,255,250,0.40)");
       foamCtx.beginPath();
       foamCtx.arc(x - r * 0.22, y - r * 0.22, r * 0.30, 0, Math.PI * 2);
       foamCtx.fill();
@@ -471,9 +481,11 @@
     }
   }
 
-  function drawVilla() {
-    drawSky(true);
-    drawSand(H * 0.70);
+  function drawVilla(skipSky) {
+    if (!skipSky) {
+      drawSky(true);
+      drawSand(H * 0.70);
+    }
     const hx = W * 0.14, hy = H * 0.28, hw = W * 0.56, hh = H * 0.44;
     ctx.fillStyle = WALL;
     ctx.fillRect(hx, hy, hw, hh);
@@ -510,9 +522,11 @@
     }
   }
 
-  function drawRoof(sealed) {
-    drawSky(!sealed);
-    drawSand(H * 0.82);
+  function drawRoof(sealed, skipSky) {
+    if (!skipSky) {
+      drawSky(!sealed);
+      drawSand(H * 0.82);
+    }
     ctx.fillStyle = WALL;
     ctx.fillRect(W * 0.07, H * 0.68, W * 0.86, H * 0.18);
     ctx.fillStyle = "#efe6d6";
@@ -584,200 +598,6 @@
         }
         ctx.stroke();
       }
-    }
-  }
-
-  function clamp(v, a, b) {
-    return Math.max(a, Math.min(b, v));
-  }
-  function lerp(a, b, t) {
-    return a + (b - a) * t;
-  }
-  function smooth(t) {
-    return t * t * (3 - 2 * t);
-  }
-
-  function project3(px, py, pz, cam) {
-    const sy = Math.sin(cam.yaw), cy = Math.cos(cam.yaw);
-    const sp = Math.sin(cam.pitch), cp = Math.cos(cam.pitch);
-    let x = px * cy + pz * sy;
-    let z = -px * sy + pz * cy;
-    let y = py - (cam.lookY || 0);
-    const y2 = y * cp - z * sp;
-    const z2 = cam.dist - (y * sp + z * cp);
-    const f = cam.fl / Math.max(0.45, z2);
-    return { x: W * 0.52 + x * f, y: H * 0.50 - y2 * f, d: z2 };
-  }
-
-  function face3(pts, fill) {
-    if (pts.length < 3) return;
-    ctx.beginPath();
-    ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
-    ctx.closePath();
-    ctx.fillStyle = fill;
-    ctx.fill();
-    ctx.strokeStyle = "rgba(80,60,40,0.16)";
-    ctx.lineWidth = 1;
-    ctx.stroke();
-  }
-
-  function avgD(pts) {
-    let s = 0;
-    for (let i = 0; i < pts.length; i++) s += pts[i].d;
-    return s / pts.length;
-  }
-
-  function drawFly3D(t) {
-    const e = smooth(clamp(t, 0, 1));
-    const cam = {
-      yaw: Math.sin(Math.PI * e) * 0.62,
-      pitch: lerp(0.10, 1.48, e * e),
-      dist: lerp(15.8, 8.4, e),
-      lookY: lerp(2.2, 5.1, e),
-      fl: Math.min(W, H) * lerp(1.12, 1.55, e)
-    };
-    const P = (x, y, z) => project3(x, y, z, cam);
-    const faces = [];
-    function add(pts, fill) {
-      faces.push({ pts: pts, fill: fill, d: avgD(pts) });
-    }
-
-    const tiles = 3, span = 16;
-    for (let i = 0; i < tiles; i++) {
-      for (let j = 0; j < tiles; j++) {
-        const xa = -span + (i * 2 * span) / tiles;
-        const xb = -span + ((i + 1) * 2 * span) / tiles;
-        const za = -span + (j * 2 * span) / tiles;
-        const zb = -span + ((j + 1) * 2 * span) / tiles;
-        add(
-          [P(xa, 0, za), P(xb, 0, za), P(xb, 0, zb), P(xa, 0, zb)],
-          ((i + j) & 1) ? "#d7c19a" : "#cbb089"
-        );
-      }
-    }
-
-    const x0 = -4.6, x1 = 4.8, z0 = -3.3, z1 = 3.3, y0 = 0, y1 = 4.9;
-    add([P(x0, y0, z0), P(x1, y0, z0), P(x1, y1, z0), P(x0, y1, z0)], "#e8dcc8");
-    add([P(x1, y0, z0), P(x1, y0, z1), P(x1, y1, z1), P(x1, y1, z0)], WALL2);
-    add([P(x0, y0, z1), P(x1, y0, z1), P(x1, y1, z1), P(x0, y1, z1)], WALL);
-    add([P(x0, y0, z0), P(x0, y0, z1), P(x0, y1, z1), P(x0, y1, z0)], "#e6d8c4");
-    add([P(x0, y1, z1), P(x1, y1, z1), P(x1, y1, z0), P(x0, y1, z0)], DECK);
-
-    const ax0 = 2.2, ax1 = 5.6, az0 = -3.3, az1 = 0.4, ay1 = 4.6;
-    add([P(ax0, y0, az0), P(ax1, y0, az0), P(ax1, ay1, az0), P(ax0, ay1, az0)], "#e2d4be");
-    add([P(ax1, y0, az0), P(ax1, y0, az1), P(ax1, ay1, az1), P(ax1, ay1, az0)], "#d9cbb4");
-    add([P(ax0, y0, az1), P(ax1, y0, az1), P(ax1, ay1, az1), P(ax0, ay1, az1)], WALL2);
-    add([P(ax0, ay1, az1), P(ax1, ay1, az1), P(ax1, ay1, az0), P(ax0, ay1, az0)], "#efe4d0");
-
-    const ins = 0.55, yt = y1 + 0.12;
-    add([P(x0 + ins, yt, z1 - ins), P(x1 - ins, yt, z1 - ins), P(x1 - ins, yt, z0 + ins), P(x0 + ins, yt, z0 + ins)], "#efe4d0");
-    add([P(x0, y1, z1), P(x1, y1, z1), P(x1 - ins, yt, z1 - ins), P(x0 + ins, yt, z1 - ins)], "#f6eee0");
-    add([P(x1, y1, z1), P(x1, y1, z0), P(x1 - ins, yt, z0 + ins), P(x1 - ins, yt, z1 - ins)], "#e4d5be");
-    add([P(x0, y1, z0), P(x0, y1, z1), P(x0 + ins, yt, z1 - ins), P(x0 + ins, yt, z0 + ins)], "#efe6d6");
-    add([P(x0, y1, z0), P(x1, y1, z0), P(x1 - ins, yt, z0 + ins), P(x0 + ins, yt, z0 + ins)], "#d9ccb6");
-
-    const wx = [
-      [-3.2, 2.6, 1.2, 1.4],
-      [-0.8, 2.6, 1.2, 1.4],
-      [-3.2, 0.7, 1.2, 1.6],
-      [-0.8, 0.7, 1.2, 1.6],
-      [2.5, 2.4, 1.1, 1.2],
-      [2.5, 0.8, 1.1, 1.3]
-    ];
-    wx.forEach((w) => {
-      add([
-        P(w[0], w[1], z1 + 0.02),
-        P(w[0] + w[2], w[1], z1 + 0.02),
-        P(w[0] + w[2], w[1] + w[3], z1 + 0.02),
-        P(w[0], w[1] + w[3], z1 + 0.02)
-      ], WINCOL);
-    });
-    add([P(-3.1, 0, z1 + 0.03), P(-1.7, 0, z1 + 0.03), P(-1.7, 1.6, z1 + 0.03), P(-3.1, 1.6, z1 + 0.03)], "#1a2230");
-
-    const tcx = 2.5, tcz = -0.65, trx = 0.9, trz = 0.95;
-    const ty0 = yt, ty1t = yt + 1.35, n = 8;
-    for (let i = 0; i < n; i++) {
-      const a0 = (i / n) * Math.PI * 2 - 0.4;
-      const a1 = ((i + 1) / n) * Math.PI * 2 - 0.4;
-      const xa = tcx + Math.cos(a0) * trx, za = tcz + Math.sin(a0) * trz;
-      const xb = tcx + Math.cos(a1) * trx, zb = tcz + Math.sin(a1) * trz;
-      add([P(xa, ty0, za), P(xb, ty0, zb), P(xb, ty1t, zb), P(xa, ty1t, za)], i & 1 ? "#e8eef0" : "#d5dde0");
-    }
-    const top = [];
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * Math.PI * 2 - 0.4;
-      top.push(P(tcx + Math.cos(a) * trx, ty1t, tcz + Math.sin(a) * trz));
-    }
-    add(top, "#F7FAFB");
-    const yb = ty0 + 0.62;
-    for (let i = 0; i < n; i++) {
-      const a0 = (i / n) * Math.PI * 2 - 0.4;
-      const a1 = ((i + 1) / n) * Math.PI * 2 - 0.4;
-      const xa = tcx + Math.cos(a0) * (trx + 0.03), za = tcz + Math.sin(a0) * (trz + 0.03);
-      const xb = tcx + Math.cos(a1) * (trx + 0.03), zb = tcz + Math.sin(a1) * (trz + 0.03);
-      add([P(xa, yb, za), P(xb, yb, zb), P(xb, yb + 0.12, zb), P(xa, yb + 0.12, za)], "#c5ced2");
-    }
-
-    function acBox(ax, az) {
-      const s = 0.85, d = 0.7, h = 0.55;
-      add([P(ax, yt, az + d), P(ax + s, yt, az + d), P(ax + s, yt + h, az + d), P(ax, yt + h, az + d)], "#e8eef0");
-      add([P(ax + s, yt, az + d), P(ax + s, yt, az), P(ax + s, yt + h, az), P(ax + s, yt + h, az + d)], "#c5ced2");
-      add([P(ax, yt, az), P(ax + s, yt, az), P(ax + s, yt + h, az), P(ax, yt + h, az)], "#d8e0e4");
-      add([P(ax, yt + h, az + d), P(ax + s, yt + h, az + d), P(ax + s, yt + h, az), P(ax, yt + h, az)], "#f4f7f8");
-    }
-    acBox(-3.4, 0.6);
-    acBox(-2.2, 0.6);
-
-    faces.sort((a, b) => b.d - a.d);
-    faces.forEach((f) => face3(f.pts, f.fill));
-
-    const palmFade = 1 - e;
-    if (palmFade > 0.05) {
-      ctx.save();
-      ctx.globalAlpha *= palmFade;
-      const tip = P(7.2, 5.4, 1.2);
-      const base = P(7.2, 0, 1.2);
-      ctx.strokeStyle = "#6b4a2b";
-      ctx.lineWidth = 6 * palmFade;
-      ctx.lineCap = "round";
-      ctx.beginPath(); ctx.moveTo(base.x, base.y); ctx.lineTo(tip.x, tip.y); ctx.stroke();
-      ctx.strokeStyle = "#2f6a38";
-      ctx.lineWidth = 3;
-      for (let i = 0; i < 7; i++) {
-        const a = -0.9 + i * 0.3;
-        const leaf = P(7.2 + Math.cos(a) * 1.8, 5.4 + Math.sin(a) * 0.4, 1.2 + Math.sin(a) * 1.2);
-        ctx.beginPath(); ctx.moveTo(tip.x, tip.y); ctx.lineTo(leaf.x, leaf.y); ctx.stroke();
-      }
-      ctx.restore();
-    }
-  }
-
-  function drawFly(t) {
-    const villaA = 1 - smooth(clamp((t - 0.10) / 0.18, 0, 1));
-    const roofA = smooth(clamp((t - 0.76) / 0.22, 0, 1));
-    const a3d = t > 0.16 ? 1 : 0;
-
-    drawSky(true);
-
-    if (a3d > 0) drawFly3D(t);
-
-    if (villaA > 0.01) {
-      ctx.save();
-      ctx.globalAlpha = villaA;
-      const lift = smooth(clamp(t / 0.22, 0, 1));
-      ctx.translate(0, -H * 0.08 * lift);
-      ctx.scale(1 + 0.12 * lift, 1 + 0.12 * lift);
-      ctx.translate(-W * 0.06 * lift, 0);
-      drawVilla();
-      ctx.restore();
-    }
-
-    if (roofA > 0.01) {
-      ctx.save();
-      ctx.globalAlpha = roofA;
-      drawRoof(false);
-      ctx.restore();
     }
   }
 
@@ -861,6 +681,203 @@
       if (p.life <= 0) { burst.splice(i, 1); continue; }
       ctx.fillStyle = p.c + Math.max(0, p.life) + ")";
       ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  function project3(px, py, pz, cam) {
+    const sy = Math.sin(cam.yaw), cy = Math.cos(cam.yaw);
+    const sp = Math.sin(cam.pitch), cp = Math.cos(cam.pitch);
+    let x = px * cy + pz * sy;
+    let z = -px * sy + pz * cy;
+    let y = py - (cam.lookY || 0);
+    const y2 = y * cp - z * sp;
+    const z2 = cam.dist - (y * sp + z * cp);
+    const f = cam.fl / Math.max(0.45, z2);
+    return { x: W * 0.52 + x * f, y: H * 0.50 - y2 * f, d: z2 };
+  }
+
+  function avgD(pts) {
+    let s = 0;
+    for (let i = 0; i < pts.length; i++) s += pts[i].d;
+    return s / pts.length;
+  }
+
+  function face3(pts, fill) {
+    if (!pts || pts.length < 3) return;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.closePath();
+    ctx.fillStyle = fill;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(80,60,40,0.16)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  function drawFly(t) {
+    const villaA = 1 - smooth(clamp((t - 0.08) / 0.20, 0, 1));
+    const roofA = smooth(clamp((t - 0.78) / 0.20, 0, 1));
+    drawSky(true);
+    if (t > 0.12 && villaA < 0.97) drawFly3D(t);
+    if (villaA > 0.02) {
+      ctx.save();
+      ctx.globalAlpha = villaA;
+      const lift = smooth(clamp(t / 0.24, 0, 1));
+      ctx.translate(W * 0.5, H * 0.62);
+      ctx.scale(1 + 0.18 * lift, 1 + 0.22 * lift);
+      ctx.translate(-W * 0.5 - W * 0.04 * lift, -H * 0.62 - H * 0.10 * lift);
+      drawVilla(t > 0.08);
+      ctx.restore();
+    }
+    if (roofA > 0.02) {
+      ctx.save();
+      ctx.globalAlpha = roofA;
+      drawRoof(false, true);
+      ctx.restore();
+    }
+  }
+
+  function drawFly3D(t) {
+    const e = smooth(clamp(t, 0, 1));
+    const cam = {
+      yaw: lerp(0.04, 0.08, e) + Math.sin(Math.PI * e) * 0.22,
+      pitch: lerp(0.08, 1.54, e),
+      dist: lerp(18.2, 6.8, e),
+      lookY: lerp(1.85, 5.35, e),
+      fl: Math.min(W, H) * lerp(1.05, 1.68, e)
+    };
+    const P = (x, y, z) => project3(x, y, z, cam);
+    const faces = [];
+    function add(pts, fill) {
+      faces.push({ pts: pts, fill: fill, d: avgD(pts) });
+    }
+
+    const tiles = 2, span = 14;
+    for (let i = 0; i < tiles; i++) {
+      for (let j = 0; j < tiles; j++) {
+        const xa = -span + (i * 2 * span) / tiles;
+        const xb = -span + ((i + 1) * 2 * span) / tiles;
+        const za = -span + (j * 2 * span) / tiles;
+        const zb = -span + ((j + 1) * 2 * span) / tiles;
+        add(
+          [P(xa, 0, za), P(xb, 0, za), P(xb, 0, zb), P(xa, 0, zb)],
+          ((i + j) & 1) ? "#d7c19a" : "#cbb089"
+        );
+      }
+    }
+
+    const x0 = -4.6, x1 = 4.8, z0 = -3.3, z1 = 3.3, y0 = 0, y1 = 4.9;
+    add([P(x0, y0, z0), P(x1, y0, z0), P(x1, y1, z0), P(x0, y1, z0)], "#e8dcc8");
+    add([P(x1, y0, z0), P(x1, y0, z1), P(x1, y1, z1), P(x1, y1, z0)], WALL2);
+    add([P(x0, y0, z1), P(x1, y0, z1), P(x1, y1, z1), P(x0, y1, z1)], WALL);
+    add([P(x0, y0, z0), P(x0, y0, z1), P(x0, y1, z1), P(x0, y1, z0)], "#e6d8c4");
+    add([P(x0, y1, z1), P(x1, y1, z1), P(x1, y1, z0), P(x0, y1, z0)], DECK);
+
+    const ax0 = 2.2, ax1 = 5.6, az0 = -3.3, az1 = 0.4, ay1 = 4.6;
+    add([P(ax0, y0, az0), P(ax1, y0, az0), P(ax1, ay1, az0), P(ax0, ay1, az0)], "#e2d4be");
+    add([P(ax1, y0, az0), P(ax1, y0, az1), P(ax1, ay1, az1), P(ax1, ay1, az0)], "#d9cbb4");
+    add([P(ax0, y0, az1), P(ax1, y0, az1), P(ax1, ay1, az1), P(ax0, ay1, az1)], WALL2);
+    add([P(ax0, ay1, az1), P(ax1, ay1, az1), P(ax1, ay1, az0), P(ax0, ay1, az0)], "#efe4d0");
+
+    const ins = 0.55, yt = y1 + 0.12;
+    add([P(x0 + ins, yt, z1 - ins), P(x1 - ins, yt, z1 - ins), P(x1 - ins, yt, z0 + ins), P(x0 + ins, yt, z0 + ins)], "#efe4d0");
+    add([P(x0, y1, z1), P(x1, y1, z1), P(x1 - ins, yt, z1 - ins), P(x0 + ins, yt, z1 - ins)], "#f6eee0");
+    add([P(x1, y1, z1), P(x1, y1, z0), P(x1 - ins, yt, z0 + ins), P(x1 - ins, yt, z1 - ins)], "#e4d5be");
+    add([P(x0, y1, z0), P(x0, y1, z1), P(x0 + ins, yt, z1 - ins), P(x0 + ins, yt, z0 + ins)], "#efe6d6");
+    add([P(x0, y1, z0), P(x1, y1, z0), P(x1 - ins, yt, z0 + ins), P(x0 + ins, yt, z0 + ins)], "#d9ccb6");
+
+    const wx = [
+      [-3.2, 2.6, 1.2, 1.4],
+      [-0.8, 2.6, 1.2, 1.4],
+      [-3.2, 0.7, 1.2, 1.6],
+      [-0.8, 0.7, 1.2, 1.6],
+      [2.5, 2.4, 1.1, 1.2],
+      [2.5, 0.8, 1.1, 1.3]
+    ];
+    wx.forEach((w) => {
+      add([
+        P(w[0], w[1], z1 + 0.02),
+        P(w[0] + w[2], w[1], z1 + 0.02),
+        P(w[0] + w[2], w[1] + w[3], z1 + 0.02),
+        P(w[0], w[1] + w[3], z1 + 0.02)
+      ], WINCOL);
+    });
+    add([P(-3.1, 0, z1 + 0.03), P(-1.7, 0, z1 + 0.03), P(-1.7, 1.6, z1 + 0.03), P(-3.1, 1.6, z1 + 0.03)], "#1a2230");
+
+    const tcx = 2.5, tcz = -0.65, trx = 0.9, trz = 0.95;
+    const ty0 = yt, ty1t = yt + 1.35, n = 10;
+    for (let i = 0; i < n; i++) {
+      const a0 = (i / n) * Math.PI * 2 - 0.4;
+      const a1 = ((i + 1) / n) * Math.PI * 2 - 0.4;
+      const xa = tcx + Math.cos(a0) * trx, za = tcz + Math.sin(a0) * trz;
+      const xb = tcx + Math.cos(a1) * trx, zb = tcz + Math.sin(a1) * trz;
+      add([P(xa, ty0, za), P(xb, ty0, zb), P(xb, ty1t, zb), P(xa, ty1t, za)], i & 1 ? "#e8eef0" : "#d5dde0");
+    }
+    const top = [];
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 - 0.4;
+      top.push(P(tcx + Math.cos(a) * trx, ty1t, tcz + Math.sin(a) * trz));
+    }
+    add(top, "#F7FAFB");
+    const yb = ty0 + 0.62;
+    for (let i = 0; i < n; i++) {
+      const a0 = (i / n) * Math.PI * 2 - 0.4;
+      const a1 = ((i + 1) / n) * Math.PI * 2 - 0.4;
+      const xa = tcx + Math.cos(a0) * (trx + 0.03), za = tcz + Math.sin(a0) * (trz + 0.03);
+      const xb = tcx + Math.cos(a1) * (trx + 0.03), zb = tcz + Math.sin(a1) * (trz + 0.03);
+      add([P(xa, yb, za), P(xb, yb, zb), P(xb, yb + 0.12, zb), P(xa, yb + 0.12, za)], "#c5ced2");
+    }
+
+    function acBox(ax, az) {
+      const s = 0.85, d = 0.7, h = 0.55;
+      add([P(ax, yt, az + d), P(ax + s, yt, az + d), P(ax + s, yt + h, az + d), P(ax, yt + h, az + d)], "#e8eef0");
+      add([P(ax + s, yt, az + d), P(ax + s, yt, az), P(ax + s, yt + h, az), P(ax + s, yt + h, az + d)], "#c5ced2");
+      add([P(ax, yt, az), P(ax + s, yt, az), P(ax + s, yt + h, az), P(ax, yt + h, az)], "#d8e0e4");
+      add([P(ax, yt + h, az + d), P(ax + s, yt + h, az + d), P(ax + s, yt + h, az), P(ax, yt + h, az)], "#f4f7f8");
+    }
+    acBox(-3.4, 0.6);
+    acBox(-2.2, 0.6);
+
+    faces.sort((a, b) => b.d - a.d);
+    faces.forEach((f) => face3(f.pts, f.fill));
+
+    const palmFade = 1 - e;
+    if (palmFade > 0.05) {
+      ctx.save();
+      ctx.globalAlpha *= palmFade;
+      const tip = P(7.2, 5.4, 1.2);
+      const base = P(7.2, 0, 1.2);
+      ctx.strokeStyle = "#6b4a2b";
+      ctx.lineWidth = 6 * palmFade;
+      ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(base.x, base.y); ctx.lineTo(tip.x, tip.y); ctx.stroke();
+      ctx.strokeStyle = "#2f6a38";
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 7; i++) {
+        const a = -0.9 + i * 0.3;
+        const leaf = P(7.2 + Math.cos(a) * 1.8, 5.4 + Math.sin(a) * 0.4, 1.2 + Math.sin(a) * 1.2);
+        ctx.beginPath(); ctx.moveTo(tip.x, tip.y); ctx.lineTo(leaf.x, leaf.y); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    const heatA = (1 - smooth(clamp((t - 0.10) / 0.28, 0, 1))) * 0.8;
+    if (heatA > 0.04) {
+      const tw = performance.now() / 380;
+      ctx.save();
+      ctx.globalAlpha *= heatA;
+      ctx.strokeStyle = "rgba(255,160,60,0.12)";
+      ctx.lineWidth = 6;
+      for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        for (let x = 0; x < W; x += 8) {
+          const y = H * 0.18 + i * 22 + Math.sin(x * 0.025 + tw + i) * 4;
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
     }
   }
 
