@@ -8,15 +8,16 @@
   const FOAM3 = "#E4D8BE";
   const WALL = "#F0E6D4";
   const WALL2 = "#E4D5BE";
-  const DECK = "#E2D6C0";
-  const DECK2 = "#D4C6AC";
-  const DURATION = 8;
+  const DECK = "#E8DCC4";
+  const DECK2 = "#DDD0B6";
+  const WINCOL = "#1E2A38";
+  const DURATION = 15;
   const BILL_START = 480;
   const BILL_MAX = 580;
   const BILL_WIN = 310;
   const BILL_RISE = 22;
   const SEAL_RADIUS = 0.035;
-  const SEAL_RATE = 1.65;
+  const SEAL_RATE = 1.55;
   const WA_TEXT = "السلام عليكم، أبغى فحص مجاني للعزل الحراري/المائي من إعلان احبس الحرارة — Al-Tamaize";
   const WA_URL = "https://wa.me/966542178038?text=" + encodeURIComponent(WA_TEXT);
 
@@ -82,14 +83,14 @@
   let nozzleAng = -0.85;
   let lastStamp = { x: -99, y: -99, t: 0 };
 
-  const DECK_BOX = { x: 0.12, y: 0.20, w: 0.76, h: 0.50 };
+  const DECK_BOX = { x: 0.13, y: 0.18, w: 0.74, h: 0.52 };
 
   const CRACKS = [
-    { pts: [[0.20, 0.34], [0.26, 0.40], [0.32, 0.48]], w: 5, seal: 0 },
-    { pts: [[0.44, 0.28], [0.46, 0.38], [0.45, 0.50]], w: 6, seal: 0 },
-    { pts: [[0.60, 0.32], [0.70, 0.38], [0.80, 0.44]], w: 5, seal: 0 },
-    { pts: [[0.20, 0.54], [0.28, 0.60], [0.34, 0.66]], w: 6, seal: 0 },
-    { pts: [[0.58, 0.54], [0.68, 0.58], [0.78, 0.64]], w: 5, seal: 0 },
+    { pts: [[0.22, 0.36], [0.28, 0.42], [0.34, 0.50]], w: 5, seal: 0 },
+    { pts: [[0.46, 0.30], [0.48, 0.40], [0.47, 0.52]], w: 6, seal: 0 },
+    { pts: [[0.58, 0.34], [0.68, 0.40], [0.78, 0.46]], w: 5, seal: 0 },
+    { pts: [[0.20, 0.54], [0.28, 0.60], [0.36, 0.66]], w: 6, seal: 0 },
+    { pts: [[0.56, 0.54], [0.66, 0.58], [0.78, 0.64]], w: 5, seal: 0 },
     { pts: [[0.40, 0.56], [0.48, 0.62], [0.52, 0.68]], w: 7, seal: 0 }
   ];
 
@@ -127,6 +128,7 @@
     foamCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
     holdHint.classList.remove("hide");
     timerEl.classList.remove("warn");
+    timerEl.textContent = DURATION.toFixed(1);
     fillBar.style.width = "0%";
     fillNum.textContent = "0%";
     billNum.textContent = String(Math.round(bill));
@@ -254,7 +256,7 @@
     fillBar.style.width = "100%";
     fillNum.textContent = "100%";
     foamCtx.save();
-    foamCtx.globalAlpha = 0.55;
+    foamCtx.globalAlpha = 0.62;
     foamCtx.fillStyle = FOAM;
     foamCtx.fillRect(DECK_BOX.x * W, DECK_BOX.y * H, DECK_BOX.w * W, DECK_BOX.h * H);
     foamCtx.restore();
@@ -339,23 +341,21 @@
   function drawSky(hot) {
     const g = ctx.createLinearGradient(0, 0, 0, H);
     if (hot) {
-      g.addColorStop(0, "#9fd0e8");
-      g.addColorStop(0.22, "#f3d9a0");
-      g.addColorStop(0.55, "#e8c790");
-      g.addColorStop(1, "#d4b07a");
+      g.addColorStop(0, "#8ec8e6");
+      g.addColorStop(0.18, "#c8e0ee");
+      g.addColorStop(0.38, "#f2d7a4");
+      g.addColorStop(1, "#e0c08a");
     } else {
-      g.addColorStop(0, "#cfe8ea");
-      g.addColorStop(0.45, "#c5ddd8");
-      g.addColorStop(1, "#b8d2c6");
+      g.addColorStop(0, "#b9dce0");
+      g.addColorStop(0.4, "#cfe8e4");
+      g.addColorStop(1, "#c5d8cc");
     }
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
-    if (hot) {
-      ctx.fillStyle = "rgba(255,236,180,0.55)";
-      ctx.beginPath();
-      ctx.arc(W * 0.78, H * 0.10, W * 0.14, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    ctx.fillStyle = hot ? "rgba(255,236,170,0.7)" : "rgba(255,255,240,0.45)";
+    ctx.beginPath();
+    ctx.arc(W * 0.82, H * 0.08, W * 0.13, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   function drawPalm(x, y, s) {
@@ -363,40 +363,47 @@
     ctx.translate(x, y);
     ctx.fillStyle = "#6b4a2b";
     ctx.beginPath();
-    ctx.moveTo(-s * 0.05, s * 1.2);
-    ctx.lineTo(s * 0.05, s * 1.2);
+    ctx.moveTo(-s * 0.05, s * 1.25);
+    ctx.lineTo(s * 0.05, s * 1.25);
     ctx.lineTo(s * 0.035, 0);
     ctx.lineTo(-s * 0.035, 0);
     ctx.fill();
     ctx.strokeStyle = "#2f6a38";
-    ctx.lineWidth = s * 0.045;
+    ctx.lineWidth = s * 0.05;
     ctx.lineCap = "round";
     for (let i = 0; i < 9; i++) {
       const a = -Math.PI / 2 + (i - 4) * 0.28;
       ctx.beginPath();
       ctx.moveTo(0, 0);
-      ctx.quadraticCurveTo(Math.cos(a) * s * 0.45, Math.sin(a) * s * 0.3 - s * 0.08, Math.cos(a) * s * 0.85, Math.sin(a) * s * 0.5);
+      ctx.quadraticCurveTo(Math.cos(a) * s * 0.45, Math.sin(a) * s * 0.3 - s * 0.08, Math.cos(a) * s * 0.88, Math.sin(a) * s * 0.52);
       ctx.stroke();
     }
     ctx.restore();
   }
 
   function drawWindow(x, y, w, h) {
-    ctx.fillStyle = "#2A3842";
+    ctx.fillStyle = WINCOL;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = WALL2;
     ctx.lineWidth = Math.max(2, w * 0.08);
     ctx.strokeRect(x, y, w, h);
+    ctx.strokeStyle = "rgba(255,255,255,0.08)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x + w / 2, y);
+    ctx.lineTo(x + w / 2, y + h);
+    ctx.stroke();
   }
 
   function drawTank(x, y, w, h) {
     const rx = w / 2;
     const ry = Math.max(6, w * 0.18);
-    ctx.fillStyle = "#c5cdd1";
-    ctx.fillRect(x - 4, y + h - 4, w + 8, 10);
+    ctx.fillStyle = "#d8dde0";
+    roundRect(x - 6, y + h - 6, w + 12, 12, 3);
+    ctx.fill();
     ctx.fillStyle = "#E8EEF0";
     ctx.fillRect(x, y + ry, w, h - ry);
-    ctx.fillStyle = "#cfd6da";
+    ctx.fillStyle = "#c5ced2";
     ctx.beginPath();
     ctx.ellipse(x + rx, y + h, rx, ry, 0, 0, Math.PI * 2);
     ctx.fill();
@@ -416,62 +423,77 @@
   }
 
   function drawAC(x, y, s) {
-    ctx.fillStyle = "#d5dce0";
+    ctx.fillStyle = "#e8eef0";
     roundRect(x, y, s, s * 0.72, 4);
     ctx.fill();
     ctx.strokeStyle = "#9aa3a8";
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.fillStyle = "#c5ced2";
+    ctx.fillRect(x + s * 0.1, y + s * 0.08, s * 0.8, 3);
+    ctx.beginPath();
+    ctx.arc(x + s * 0.5, y + s * 0.38, s * 0.22, 0, Math.PI * 2);
+    ctx.strokeStyle = "#7d868c";
+    ctx.lineWidth = 1.4;
     ctx.stroke();
     ctx.beginPath();
-    ctx.arc(x + s * 0.5, y + s * 0.36, s * 0.22, 0, Math.PI * 2);
-    ctx.strokeStyle = "#7d868c";
+    ctx.arc(x + s * 0.5, y + s * 0.38, s * 0.08, 0, Math.PI * 2);
     ctx.stroke();
-    ctx.fillStyle = "#b0b8bc";
-    ctx.fillRect(x + s * 0.12, y + s * 0.08, s * 0.76, 3);
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(x + s * 0.5, y + s * 0.38);
+      ctx.lineTo(x + s * 0.5 + Math.cos(a) * s * 0.18, y + s * 0.38 + Math.sin(a) * s * 0.18);
+      ctx.stroke();
+    }
+  }
+
+  function drawSand(y0) {
+    ctx.fillStyle = "#d7c19a";
+    ctx.fillRect(0, y0, W, H - y0);
+    ctx.fillStyle = "#c9b089";
+    ctx.fillRect(0, y0, W, 4);
+    ctx.fillStyle = "rgba(160,130,90,0.18)";
+    for (let i = 0; i < 40; i++) {
+      const x = (i * 97) % W;
+      const y = y0 + 8 + ((i * 53) % (H - y0 - 10));
+      ctx.fillRect(x, y, 3, 2);
+    }
   }
 
   function drawVilla() {
     drawSky(true);
-    ctx.fillStyle = "#d4c2a3";
-    ctx.fillRect(0, H * 0.70, W, H * 0.30);
-    ctx.fillStyle = "#c9b089";
-    ctx.fillRect(0, H * 0.695, W, H * 0.012);
-
-    const hx = W * 0.16, hy = H * 0.30, hw = W * 0.54, hh = H * 0.42;
+    drawSand(H * 0.70);
+    const hx = W * 0.14, hy = H * 0.28, hw = W * 0.56, hh = H * 0.44;
     ctx.fillStyle = WALL;
     ctx.fillRect(hx, hy, hw, hh);
     ctx.fillStyle = WALL2;
-    ctx.fillRect(hx + hw * 0.70, hy + hh * 0.06, hw * 0.38, hh * 0.94);
-    ctx.fillStyle = "#d9cbb6";
-    ctx.fillRect(hx - 3, hy - H * 0.028, hw + 6, H * 0.032);
-
-    drawTank(hx + hw * 0.28, hy - H * 0.115, hw * 0.20, H * 0.10);
-    drawAC(hx + hw * 0.54, hy - H * 0.072, hw * 0.13);
-    drawAC(hx + hw * 0.70, hy - H * 0.072, hw * 0.13);
-
-    drawWindow(hx + hw * 0.10, hy + hh * 0.14, hw * 0.16, hh * 0.18);
-    drawWindow(hx + hw * 0.38, hy + hh * 0.14, hw * 0.16, hh * 0.18);
-    drawWindow(hx + hw * 0.10, hy + hh * 0.46, hw * 0.16, hh * 0.22);
-    drawWindow(hx + hw * 0.38, hy + hh * 0.46, hw * 0.16, hh * 0.22);
-    drawWindow(hx + hw * 0.78, hy + hh * 0.18, hw * 0.14, hh * 0.16);
-    drawWindow(hx + hw * 0.78, hy + hh * 0.48, hw * 0.14, hh * 0.16);
-
-    ctx.fillStyle = "#2A3842";
-    ctx.fillRect(hx + hw * 0.12, hy + hh * 0.78, hw * 0.11, hh * 0.22);
+    ctx.fillRect(hx + hw * 0.68, hy + hh * 0.05, hw * 0.40, hh * 0.95);
+    ctx.fillStyle = "#efe6d6";
+    ctx.fillRect(hx - 4, hy - H * 0.03, hw + 10, H * 0.034);
+    drawTank(hx + hw * 0.26, hy - H * 0.12, hw * 0.22, H * 0.105);
+    drawAC(hx + hw * 0.54, hy - H * 0.078, hw * 0.14);
+    drawAC(hx + hw * 0.70, hy - H * 0.078, hw * 0.14);
+    drawWindow(hx + hw * 0.09, hy + hh * 0.14, hw * 0.16, hh * 0.18);
+    drawWindow(hx + hw * 0.36, hy + hh * 0.14, hw * 0.16, hh * 0.18);
+    drawWindow(hx + hw * 0.09, hy + hh * 0.44, hw * 0.16, hh * 0.22);
+    drawWindow(hx + hw * 0.36, hy + hh * 0.44, hw * 0.16, hh * 0.22);
+    drawWindow(hx + hw * 0.76, hy + hh * 0.18, hw * 0.15, hh * 0.16);
+    drawWindow(hx + hw * 0.76, hy + hh * 0.46, hw * 0.15, hh * 0.16);
+    ctx.fillStyle = WINCOL;
+    ctx.fillRect(hx + hw * 0.12, hy + hh * 0.78, hw * 0.12, hh * 0.22);
     ctx.fillStyle = WALL;
-    ctx.fillRect(W * 0.10, H * 0.63, W * 0.78, H * 0.085);
+    ctx.fillRect(W * 0.08, H * 0.62, W * 0.80, H * 0.09);
     ctx.fillStyle = "#3a2a22";
-    ctx.fillRect(W * 0.27, H * 0.655, W * 0.07, H * 0.06);
-
-    drawPalm(W * 0.84, H * 0.40, W * 0.20);
-
+    ctx.fillRect(W * 0.26, H * 0.645, W * 0.08, H * 0.065);
+    drawPalm(W * 0.86, H * 0.38, W * 0.22);
     const t = performance.now() / 420;
-    ctx.strokeStyle = "rgba(255,150,50,0.12)";
-    ctx.lineWidth = 8;
-    for (let i = 0; i < 4; i++) {
+    ctx.strokeStyle = "rgba(255,150,50,0.10)";
+    ctx.lineWidth = 7;
+    for (let i = 0; i < 3; i++) {
       ctx.beginPath();
       for (let x = 0; x < W; x += 10) {
-        const y = H * 0.18 + i * 26 + Math.sin(x * 0.02 + t + i) * 5;
+        const y = H * 0.16 + i * 24 + Math.sin(x * 0.02 + t + i) * 4;
         if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
       ctx.stroke();
@@ -480,37 +502,37 @@
 
   function drawRoof(sealed) {
     drawSky(!sealed);
-    ctx.fillStyle = sealed ? "#c5d0c8" : "#d4c2a3";
-    ctx.fillRect(0, H * 0.78, W, H * 0.22);
-
+    drawSand(H * 0.82);
     ctx.fillStyle = WALL;
-    ctx.fillRect(W * 0.08, H * 0.70, W * 0.84, H * 0.16);
-    ctx.fillStyle = "#d9cbb6";
-    ctx.fillRect(W * 0.08, H * 0.70, W * 0.84, 6);
-    drawWindow(W * 0.20, H * 0.78, W * 0.11, H * 0.08);
-    drawWindow(W * 0.38, H * 0.78, W * 0.11, H * 0.08);
-    drawWindow(W * 0.68, H * 0.78, W * 0.11, H * 0.08);
-
-    const px = W * 0.08, py = H * 0.16, pw = W * 0.84, ph = H * 0.56;
+    ctx.fillRect(W * 0.07, H * 0.68, W * 0.86, H * 0.18);
+    ctx.fillStyle = "#efe6d6";
+    ctx.fillRect(W * 0.07, H * 0.68, W * 0.86, 7);
+    drawWindow(W * 0.18, H * 0.76, W * 0.12, H * 0.09);
+    drawWindow(W * 0.36, H * 0.76, W * 0.12, H * 0.09);
+    drawWindow(W * 0.66, H * 0.76, W * 0.12, H * 0.09);
+    const px = W * 0.07, py = H * 0.14, pw = W * 0.86, ph = H * 0.56;
     ctx.fillStyle = WALL;
     ctx.fillRect(px, py, pw, ph);
-    ctx.fillStyle = "#d8cbb8";
-    ctx.fillRect(px, py, pw, 10);
-
+    ctx.fillStyle = "#f6eee0";
+    ctx.fillRect(px, py, pw, 12);
+    ctx.fillStyle = WALL2;
+    ctx.fillRect(px, py + ph - 10, pw, 10);
     const dx = DECK_BOX.x * W, dy = DECK_BOX.y * H, dw = DECK_BOX.w * W, dh = DECK_BOX.h * H;
     ctx.fillStyle = sealed ? "#EFECE4" : DECK;
     ctx.fillRect(dx, dy, dw, dh);
-    ctx.fillStyle = sealed ? "rgba(247,242,230,0.35)" : DECK2;
-    ctx.fillRect(dx, dy + dh * 0.52, dw, dh * 0.48);
-
+    const shade = ctx.createLinearGradient(dx, dy, dx, dy + dh);
+    shade.addColorStop(0, sealed ? "rgba(247,242,230,0.35)" : "rgba(255,255,255,0.18)");
+    shade.addColorStop(1, sealed ? "rgba(228,216,190,0.45)" : "rgba(180,160,120,0.16)");
+    ctx.fillStyle = shade;
+    ctx.fillRect(dx, dy, dw, dh);
     ctx.save();
     ctx.beginPath();
     ctx.rect(dx, dy, dw, dh);
     ctx.clip();
-    ctx.strokeStyle = sealed ? "rgba(180,190,185,0.35)" : "rgba(120,100,70,0.22)";
+    ctx.strokeStyle = sealed ? "rgba(180,190,185,0.32)" : "rgba(130,110,80,0.22)";
     ctx.lineWidth = 2;
-    for (let i = 1; i < 5; i++) {
-      const y = dy + (dh * i) / 5;
+    for (let i = 1; i < 6; i++) {
+      const y = dy + (dh * i) / 6;
       ctx.beginPath(); ctx.moveTo(dx, y); ctx.lineTo(dx + dw, y); ctx.stroke();
     }
     for (let i = 1; i < 4; i++) {
@@ -518,35 +540,36 @@
       ctx.beginPath(); ctx.moveTo(x, dy); ctx.lineTo(x, dy + dh); ctx.stroke();
     }
     if (!sealed) {
-      ctx.fillStyle = "rgba(70,110,125,0.18)";
-      ctx.beginPath(); ctx.ellipse(W * 0.30, H * 0.58, 26, 12, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(W * 0.70, H * 0.42, 20, 10, 0.2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "rgba(80,110,125,0.20)";
+      ctx.beginPath(); ctx.ellipse(W * 0.32, H * 0.58, 24, 11, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(W * 0.68, H * 0.44, 18, 9, 0.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(W * 0.50, H * 0.64, 14, 7, -0.2, 0, Math.PI * 2); ctx.fill();
     }
     ctx.restore();
-
-    ctx.strokeStyle = WALL2;
-    ctx.lineWidth = 16;
-    ctx.strokeRect(dx, dy, dw, dh);
-    ctx.strokeStyle = "#efe6d6";
-    ctx.lineWidth = 4;
-    ctx.strokeRect(dx - 8, dy - 8, dw + 16, dh + 16);
-
-    ctx.fillStyle = "rgba(0,0,0,0.08)";
-    ctx.fillRect(dx, dy, dw, 8);
-    ctx.fillRect(dx, dy, 8, dh);
-
-    drawTank(W * 0.64, H * 0.175, W * 0.16, H * 0.11);
-    drawAC(W * 0.16, H * 0.23, W * 0.12);
-    drawAC(W * 0.30, H * 0.23, W * 0.12);
-
-    const t = performance.now() / 380;
+    ctx.fillStyle = WALL;
+    ctx.fillRect(px, py, pw, dy - py);
+    ctx.fillRect(px, py, dx - px, ph);
+    ctx.fillRect(dx + dw, py, px + pw - (dx + dw), ph);
+    ctx.fillRect(px, dy + dh, pw, py + ph - (dy + dh));
+    ctx.fillStyle = "#f7f0e4";
+    ctx.fillRect(dx - 6, dy - 6, dw + 12, 8);
+    ctx.fillRect(dx - 6, dy - 6, 8, dh + 12);
+    ctx.fillRect(dx + dw - 2, dy - 6, 8, dh + 12);
+    ctx.fillRect(dx - 6, dy + dh - 2, dw + 12, 8);
+    ctx.fillStyle = "rgba(0,0,0,0.10)";
+    ctx.fillRect(dx, dy, dw, 7);
+    ctx.fillRect(dx, dy, 7, dh);
+    drawAC(W * 0.17, H * 0.21, W * 0.13);
+    drawAC(W * 0.32, H * 0.21, W * 0.13);
+    drawTank(W * 0.64, H * 0.165, W * 0.17, H * 0.12);
     if (!sealed) {
-      ctx.strokeStyle = "rgba(255,160,60,0.10)";
-      ctx.lineWidth = 7;
+      const t = performance.now() / 380;
+      ctx.strokeStyle = "rgba(255,160,60,0.09)";
+      ctx.lineWidth = 6;
       for (let i = 0; i < 3; i++) {
         ctx.beginPath();
         for (let x = dx; x < dx + dw; x += 8) {
-          const y = dy + 20 + i * 28 + Math.sin(x * 0.03 + t + i) * 4;
+          const y = dy + 18 + i * 26 + Math.sin(x * 0.03 + t + i) * 3;
           if (x === dx) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.stroke();
@@ -600,21 +623,15 @@
     ctx.closePath();
     ctx.fill();
     ctx.fillStyle = NAVY;
-    roundRect(-10, -12, 52, 18, 8);
-    ctx.fill();
+    roundRect(-10, -12, 52, 18, 8); ctx.fill();
     ctx.fillStyle = RED;
-    roundRect(10, 5, 8, 16, 2);
-    ctx.fill();
+    roundRect(10, 5, 8, 16, 2); ctx.fill();
     ctx.fillStyle = NAVY;
-    roundRect(-8, 5, 14, 26, 5);
-    ctx.fill();
+    roundRect(-8, 5, 14, 26, 5); ctx.fill();
     ctx.fillStyle = "#0c2748";
-    roundRect(36, -6, 16, 8, 3);
-    ctx.fill();
+    roundRect(36, -6, 16, 8, 3); ctx.fill();
     ctx.fillStyle = FOAM;
-    ctx.beginPath();
-    ctx.arc(54, -2, 5, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(54, -2, 5, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
   }
 
@@ -649,7 +666,6 @@
     const dt = Math.min(0.033, (now - last) / 1000);
     last = now;
     if (paused) return;
-
     if (screen === "play") {
       tLeft = Math.max(0, tLeft - dt);
       if (holding) {
@@ -670,9 +686,9 @@
         bill = Math.min(BILL_MAX, bill + BILL_RISE * dt);
       }
       fill = crackFill();
-      heatEl.style.opacity = String(0.18 + 0.40 * (1 - fill / 100));
+      heatEl.style.opacity = String(0.14 + 0.32 * (1 - fill / 100));
       timerEl.textContent = tLeft.toFixed(1);
-      timerEl.classList.toggle("warn", tLeft <= 2);
+      timerEl.classList.toggle("warn", tLeft <= 3);
       billNum.textContent = String(Math.round(bill));
       fillNum.textContent = Math.round(fill) + "%";
       fillBar.style.width = fill + "%";
@@ -682,10 +698,8 @@
       const cur = Number(billTo.textContent);
       if (cur > BILL_WIN) billTo.textContent = String(Math.max(BILL_WIN, cur - 8));
     }
-
     if (screen === "start") drawVilla();
     else drawRoof(screen === "win");
-
     if (screen === "play" || screen === "lose") drawCracks();
     if (screen === "play" || screen === "win") ctx.drawImage(foamCanvas, 0, 0, W, H);
     if (screen === "play" && holding) {
