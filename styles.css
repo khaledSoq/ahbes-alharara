@@ -66,9 +66,9 @@ html, body {
 #fx { z-index: 1; }
 #heat {
   z-index: 2;
-  background: linear-gradient(180deg, rgba(255,176,80,.10), rgba(210,90,30,.28) 70%, rgba(90,20,10,.18));
+  background: linear-gradient(180deg, rgba(255,176,80,.08), rgba(210,90,30,.22) 70%, rgba(90,20,10,.14));
   mix-blend-mode: overlay;
-  opacity: .55;
+  opacity: .45;
   transition: opacity .6s ease;
 }
 #cool {
@@ -81,9 +81,9 @@ html, body {
 
 #stage[data-state="win"] #heat { opacity: 0; }
 #stage[data-state="win"] #cool { opacity: 1; }
-#stage[data-state="lose"] #heat { opacity: .75; }
-#stage[data-state="play"] #heat { opacity: .38; }
-#stage[data-state="start"] #heat { opacity: .28; }
+#stage[data-state="lose"] #heat { opacity: .65; }
+#stage[data-state="play"] #heat { opacity: .28; }
+#stage[data-state="start"] #heat { opacity: .22; }
 
 .screen {
   position: absolute; inset: 0;
@@ -192,6 +192,13 @@ html, body {
 @keyframes cta {
   0%,100% { transform: translateY(0); }
   50% { transform: translateY(-2px); }
+}
+.btn-site {
+  margin-top: 10px;
+  background: #fff;
+  color: var(--navy);
+  border: 2px solid var(--navy);
+  box-shadow: none;
 }
 .btn-ghost {
   margin-top: 10px;
@@ -310,7 +317,7 @@ html, body {
   width: 100%;
   background: #fff;
   border-radius: 24px 24px 0 0;
-  padding: 18px 18px 16px;
+  padding: 16px 18px 14px;
   display: flex; flex-direction: column; align-items: center;
   transform: translateY(24px);
   opacity: 0;
@@ -368,7 +375,7 @@ html, body {
 }
 
 #screen-play, #screen-start { pointer-events: none; }
-#btn-start, #btn-replay, #btn-wa { pointer-events: auto; }
+#btn-start, #btn-replay, #btn-wa, #btn-site { pointer-events: auto; }
 
 @media (min-height: 780px) {
   .title { margin-top: 22px; }
