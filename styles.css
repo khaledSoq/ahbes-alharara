@@ -1,3 +1,7 @@
+@import url("ui.css");
+@import url("hud.css");
+@import url("end.css");
+
 :root {
   --navy: #123A6B;
   --red: #E31B23;
