@@ -196,7 +196,7 @@
     foamCtx.arc(x, y, r, 0, Math.PI * 2);
     foamCtx.fill();
     if (strong) {
-      foamCtx.fillStyle = "rgba(255,255,250,0.40)");
+      foamCtx.fillStyle = "rgba(255,255,250,0.40)";
       foamCtx.beginPath();
       foamCtx.arc(x - r * 0.22, y - r * 0.22, r * 0.30, 0, Math.PI * 2);
       foamCtx.fill();
@@ -741,11 +741,11 @@
   function drawFly3D(t) {
     const e = smooth(clamp(t, 0, 1));
     const cam = {
-      yaw: lerp(0.04, 0.08, e) + Math.sin(Math.PI * e) * 0.22,
-      pitch: lerp(0.08, 1.54, e),
-      dist: lerp(18.2, 6.8, e),
-      lookY: lerp(1.85, 5.35, e),
-      fl: Math.min(W, H) * lerp(1.05, 1.68, e)
+      yaw: 0.10 + Math.sin(Math.PI * e) * 0.92,   // ~53° side view at mid-flight, settles near frontal top-down
+      pitch: lerp(0.10, 1.52, e * e),             // stay street-level longer, then pitch up hard
+      dist: lerp(17.4, 7.2, e),
+      lookY: lerp(2.05, 5.25, e),
+      fl: Math.min(W, H) * lerp(1.08, 1.62, e)
     };
     const P = (x, y, z) => project3(x, y, z, cam);
     const faces = [];
