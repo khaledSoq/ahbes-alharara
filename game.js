@@ -12,6 +12,7 @@
   const DECK2 = "#DDD0B6";
   const WINCOL = "#1E2A38";
   const DURATION = 15;
+  const FLY_DUR = 1.75;
   const BILL_START = 480;
   const BILL_MAX = 580;
   const BILL_WIN = 310;
@@ -82,6 +83,7 @@
   let burst = [];
   let nozzleAng = -0.85;
   let lastStamp = { x: -99, y: -99, t: 0 };
+  let flyT = 0;
 
   const DECK_BOX = { x: 0.13, y: 0.18, w: 0.74, h: 0.52 };
 
@@ -273,11 +275,14 @@
   }
 
   function startPlay() {
+    if (screen !== "start") return;
     resetPlay();
-    setScreen("play");
+    flyT = 0;
+    setScreen("fly");
   }
   function replay() {
     resetPlay();
+    flyT = 0;
     setScreen("start");
   }
 
@@ -577,6 +582,132 @@
     }
   }
 
+  function smooth(t) {
+    return t * t * (3 - 2 * t);
+  }
+
+  function project3(px, py, pz, cam) {
+    const sy = Math.sin(cam.yaw), cy = Math.cos(cam.yaw);
+    const sp = Math.sin(cam.pitch), cp = Math.cos(cam.pitch);
+    let x = px * cy + pz * sy;
+    let z = -px * sy + pz * cy;
+    let y = py;
+    const y2 = y * cp - z * sp;
+    const z2 = cam.dist - (y * sp + z * cp);
+    const f = cam.fl / Math.max(0.45, z2);
+    return { x: W * 0.52 + x * f, y: H * 0.50 - y2 * f, d: z2 };
+  }
+
+  function face3(pts, fill) {
+    if (pts.length < 3) return;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.closePath();
+    ctx.fillStyle = fill;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(80,60,40,0.16)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  function avgD(pts) {
+    let s = 0;
+    for (let i = 0; i < pts.length; i++) s += pts[i].d;
+    return s / pts.length;
+  }
+
+  function drawFly(t) {
+    const e = smooth(Math.max(0, Math.min(1, t)));
+    const cam = {
+      yaw: Math.sin(Math.PI * e) * 0.78,
+      pitch: 0.08 + e * e * 1.28,
+      dist: 16.5 - e * 7.2,
+      fl: Math.min(W, H) * (1.05 + e * 0.35)
+    };
+    drawSky(true);
+
+    const ground = [];
+    const grid = 5;
+    for (let i = -grid; i <= grid; i++) {
+      for (let j = -grid; j <= grid; j++) {
+        const a = project3(i * 4, 0, j * 4, cam);
+        const b = project3((i + 1) * 4, 0, j * 4, cam);
+        const c = project3((i + 1) * 4, 0, (j + 1) * 4, cam);
+        const d = project3(i * 4, 0, (j + 1) * 4, cam);
+        ground.push({ pts: [a, b, c, d], fill: ((i + j) & 1) ? "#d4be96" : "#cbb089", d: avgD([a, b, c, d]) });
+      }
+    }
+    ground.sort((a, b) => b.d - a.d);
+    ground.forEach((g) => face3(g.pts, g.fill));
+
+    const x0 = -4.6, x1 = 4.8, z0 = -3.3, z1 = 3.3, y0 = 0, y1 = 4.9;
+    const P = (x, y, z) => project3(x, y, z, cam);
+    const faces = [];
+    function add(pts, fill) {
+      faces.push({ pts, fill, d: avgD(pts) });
+    }
+    add([P(x0, y0, z0), P(x1, y0, z0), P(x1, y1, z0), P(x0, y1, z0)], "#e8dcc8");
+    add([P(x1, y0, z0), P(x1, y0, z1), P(x1, y1, z1), P(x1, y1, z0)], WALL2);
+    add([P(x0, y0, z1), P(x1, y0, z1), P(x1, y1, z1), P(x0, y1, z1)], WALL);
+    add([P(x0, y0, z0), P(x0, y0, z1), P(x0, y1, z1), P(x0, y1, z0)], "#e6d8c4");
+    add([P(x0, y1, z1), P(x1, y1, z1), P(x1, y1, z0), P(x0, y1, z0)], DECK);
+
+    const ins = 0.55, yt = y1 + 0.12;
+    add([P(x0 + ins, yt, z1 - ins), P(x1 - ins, yt, z1 - ins), P(x1 - ins, yt, z0 + ins), P(x0 + ins, yt, z0 + ins)], "#efe4d0");
+    add([P(x0, y1, z1), P(x1, y1, z1), P(x1 - ins, yt, z1 - ins), P(x0 + ins, yt, z1 - ins)], "#f6eee0");
+    add([P(x1, y1, z1), P(x1, y1, z0), P(x1 - ins, yt, z0 + ins), P(x1 - ins, yt, z1 - ins)], "#e4d5be");
+    add([P(x0, y1, z0), P(x0, y1, z1), P(x0 + ins, yt, z1 - ins), P(x0 + ins, yt, z0 + ins)], "#efe6d6");
+    add([P(x0, y1, z0), P(x1, y1, z0), P(x1 - ins, yt, z0 + ins), P(x0 + ins, yt, z0 + ins)], "#d9ccb6");
+
+    const wx = [[-3.2, 2.6, 1.2, 1.4], [-0.8, 2.6, 1.2, 1.4], [-3.2, 0.7, 1.2, 1.6], [-0.8, 0.7, 1.2, 1.6], [2.5, 2.4, 1.1, 1.2], [2.5, 0.8, 1.1, 1.3]];
+    wx.forEach((w) => {
+      add([P(w[0], w[1], z1 + 0.02), P(w[0] + w[2], w[1], z1 + 0.02), P(w[0] + w[2], w[1] + w[3], z1 + 0.02), P(w[0], w[1] + w[3], z1 + 0.02)], WINCOL);
+    });
+    add([P(-3.1, 0, z1 + 0.03), P(-1.7, 0, z1 + 0.03), P(-1.7, 1.6, z1 + 0.03), P(-3.1, 1.6, z1 + 0.03)], WINCOL);
+
+    const tx0 = 1.6, tx1 = 3.4, tz0 = -1.6, tz1 = 0.3, ty0 = yt, ty1 = yt + 1.35;
+    add([P(tx0, ty0, tz1), P(tx1, ty0, tz1), P(tx1, ty1, tz1), P(tx0, ty1, tz1)], "#F7FAFB");
+    add([P(tx1, ty0, tz1), P(tx1, ty0, tz0), P(tx1, ty1, tz0), P(tx1, ty1, tz1)], "#c5ced2");
+    add([P(tx0, ty1, tz1), P(tx1, ty1, tz1), P(tx1, ty1, tz0), P(tx0, ty1, tz0)], "#ffffff");
+
+    function acBox(ax, az) {
+      const s = 0.85, d = 0.7, h = 0.55;
+      add([P(ax, yt, az + d), P(ax + s, yt, az + d), P(ax + s, yt + h, az + d), P(ax, yt + h, az + d)], "#e8eef0");
+      add([P(ax + s, yt, az + d), P(ax + s, yt, az), P(ax + s, yt + h, az), P(ax + s, yt + h, az + d)], "#c5ced2");
+      add([P(ax, yt + h, az + d), P(ax + s, yt + h, az + d), P(ax + s, yt + h, az), P(ax, yt + h, az)], "#f4f7f8");
+    }
+    acBox(-3.4, 0.6);
+    acBox(-2.2, 0.6);
+
+    faces.sort((a, b) => b.d - a.d);
+    faces.forEach((f) => face3(f.pts, f.fill));
+
+    const palmFade = 1 - e;
+    if (palmFade > 0.05) {
+      ctx.globalAlpha = palmFade;
+      const tip = project3(7.2, 5.4, 1.2, cam);
+      const base = project3(7.2, 0, 1.2, cam);
+      ctx.strokeStyle = "#6b4a2b";
+      ctx.lineWidth = 6 * palmFade;
+      ctx.beginPath(); ctx.moveTo(base.x, base.y); ctx.lineTo(tip.x, tip.y); ctx.stroke();
+      ctx.strokeStyle = "#2f6a38";
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 7; i++) {
+        const a = -0.9 + i * 0.3;
+        const leaf = project3(7.2 + Math.cos(a) * 1.8, 5.4 + Math.sin(a) * 0.4, 1.2 + Math.sin(a) * 1.2, cam);
+        ctx.beginPath(); ctx.moveTo(tip.x, tip.y); ctx.lineTo(leaf.x, leaf.y); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    if (e > 0.82) {
+      ctx.globalAlpha = (e - 0.82) / 0.18;
+      drawRoof(false);
+      ctx.globalAlpha = 1;
+    }
+  }
+
   function drawCracks() {
     CRACKS.forEach((c, idx) => {
       ctx.lineCap = "round";
@@ -666,6 +797,14 @@
     const dt = Math.min(0.033, (now - last) / 1000);
     last = now;
     if (paused) return;
+
+    if (screen === "fly") {
+      flyT = Math.min(1, flyT + dt / FLY_DUR);
+      drawFly(flyT);
+      if (flyT >= 1) setScreen("play");
+      return;
+    }
+
     if (screen === "play") {
       tLeft = Math.max(0, tLeft - dt);
       if (holding) {
@@ -698,8 +837,10 @@
       const cur = Number(billTo.textContent);
       if (cur > BILL_WIN) billTo.textContent = String(Math.max(BILL_WIN, cur - 8));
     }
+
     if (screen === "start") drawVilla();
     else drawRoof(screen === "win");
+
     if (screen === "play" || screen === "lose") drawCracks();
     if (screen === "play" || screen === "win") ctx.drawImage(foamCanvas, 0, 0, W, H);
     if (screen === "play" && holding) {
