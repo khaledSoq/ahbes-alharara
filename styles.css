@@ -84,6 +84,8 @@ html, body {
 #stage[data-state="lose"] #heat { opacity: .65; }
 #stage[data-state="play"] #heat { opacity: .28; }
 #stage[data-state="start"] #heat { opacity: .22; }
+#stage[data-state="fly"] #heat { opacity: .14; }
+#stage[data-state="fly"] .screen { display: none !important; }
 
 .screen {
   position: absolute; inset: 0;
