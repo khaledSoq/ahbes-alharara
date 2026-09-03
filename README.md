@@ -28,7 +28,7 @@ Official lockup pixels (not redrawn):
 - `assets/logo-al-tamaize.png` — full lockup on white
 - `assets/logo-symbol.png` — swoosh + T only (HUD)
 
-`index.html` loads the PNG first. Empty `alt`. If the PNG is missing, the `<img>` is hidden and an inline SVG fallback with `viewBox` stays in the white pill.
+`index.html` loads the PNG first. Empty `alt`. If the PNG is missing, the img is hidden and an inline SVG fallback with `viewBox` stays in the white pill.
 
 Brand name in UI is **Al-Tamaize** only. Arabic near the logo: التميز.
 
@@ -52,6 +52,8 @@ End-card buttons (win and lose):
 1. **اطلب فحص مجاني** → WhatsApp prefilled message
 2. **زيارة موقعنا** → https://altamaize.com/
 3. **العب مرة ثانية**
+
+The end card (win and lose) now shows company (مؤسسة التميز الفني التجارية، الخبر) and خدماتنا (4 services) above the same three CTAs.
 
 Allowed claims only: يقلل انتقال الحرارة، يحمي من التسريب، ضمان مكتوب 10 سنوات.
 
