@@ -36,6 +36,8 @@ Brand name in UI is **Al-Tamaize** only. Arabic near the logo: التميز.
 
 Villa and roof are **drawn in canvas** (cream Gulf villa, dark navy windows, palm, noon sun, sand street). No stock photos.
 
+Start → cinematic 2D→3D→2D fly-up onto the same villa's roof (tap to skip) → 15s spray.
+
 | Screen | Notes |
 | --- | --- |
 | Start | Street view of the cream Khobar villa + palm + roof tank + ACs. احبس الحرارة / وقف التسريب |
